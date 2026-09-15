@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NETDIR://SPACEFED.CORP/VALHALLA_PACKAGE</title>
+    <style>
+        /* --------------------------------------------------
+         * CYBERPUNK NET UI BASE STYLES
+         * -------------------------------------------------- */
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;700&display=swap');
+
+        :root {
+            --cyan-main: #00f0ff;
+            --cyan-dim: #007788;
+            --cyan-dark: #051a24;
+            --bg-black: #03080c;
+            --red-accent: #ff2a4b;
+            --yellow-accent: #fcee0a;
+            --text-color: #d1f7ff;
+            --border-glow: 0 0 10px rgba(0, 240, 255, 0.4);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-black);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.05) 0%, transparent 80%),
+                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 20px 20px, 20px 20px;
+        }
+
+        /* --------------------------------------------------
+         * BROWSER WINDOW FRAME (KEYSTONE STYLE)
+         * -------------------------------------------------- */
+        .browser-frame {
+            width: 100%;
+            max-width: 1024px;
+            background: rgba(3, 15, 22, 0.95);
+            border: 2px solid var(--cyan-main);
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.25);
+            position: relative;
+            clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%);
+        }
+
+        /* Top Bar */
+        .net-top-bar {
+            display: flex;
+            align-items: center;
+            background: var(--cyan-dark);
+            border-bottom: 1px solid var(--cyan-main);
+            padding: 6px 15px;
+            gap: 10px;
+        }
+
+        .net-icon {
+            width: 20px;
+            height: 20px;
+            border: 1px solid var(--cyan-main);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: var(--cyan-main);
+        }
+
+        .net-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            color: var(--cyan-main);
+            letter-spacing: 1px;
+        }
+
+        /* Keystone URL Bar */
+        .keystone-bar {
+            display: flex;
+            align-items: center;
+            background: #000;
+            border-bottom: 2px solid var(--cyan-main);
+            padding: 8px 15px;
+            font-family: 'Orbitron', monospace;
+            font-size: 13px;
+            gap: 15px;
+        }
+
+        .keystone-logo {
+            color: #fff;
+            font-weight: 900;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .keystone-logo::before {
+            content: '▲';
+            color: var(--cyan-main);
+            font-size: 10px;
+        }
+
+        .url-box {
+            flex: 1;
+            background: rgba(0, 240, 255, 0.08);
+            border: 1px solid var(--cyan-dim);
+            padding: 4px 12px;
+            color: var(--cyan-main);
+            letter-spacing: 1px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .netwatch-tag {
+            color: var(--cyan-dim);
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+
+        /* --------------------------------------------------
+         * NAVIGATION TABS
+         * -------------------------------------------------- */
+        .nav-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--cyan-dim);
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            border-right: 1px solid var(--cyan-dim);
+            color: #fff;
+            padding: 12px 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            position: relative;
+        }
+
+        .tab-btn:hover {
+            background: rgba(0, 240, 255, 0.15);
+            color: var(--cyan-main);
+        }
+
+        .tab-btn.active {
+            background: rgba(0, 240, 255, 0.25);
+            color: var(--cyan-main);
+            border-bottom: 3px solid var(--cyan-main);
+            box-shadow: inset 0 -5px 10px rgba(0, 240, 255, 0.3);
+        }
+
+        .tab-btn:last-child {
+            border-right: none;
+        }
+
+        /* --------------------------------------------------
+         * MAIN CONTENT AREA
+         * -------------------------------------------------- */
+        .content-area {
+            padding: 25px;
+            min-height: 480px;
+            position: relative;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Goldilocks Planet Image Frame */
+        .planet-banner {
+            width: 100%;
+            height: 220px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--cyan-main);
+            margin-bottom: 20px;
+            box-shadow: var(--border-glow);
+        }
+
+        .planet-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 40%;
+            filter: saturate(1.5) contrast(1.1) brightness(1.0);
+        }
+
+        .planet-overlay-text {
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+            background: rgba(3, 15, 22, 0.85);
+            border-left: 3px solid var(--cyan-main);
+            padding: 5px 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            color: var(--cyan-main);
+            letter-spacing: 1px;
+        }
+
+        /* Main Descriptions */
+        .main-title {
+            font-family: 'Orbitron', 'Noto Sans KR', sans-serif;
+            font-size: 22px;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sub-title {
+            color: var(--cyan-main);
+            font-size: 14px;
+            margin-bottom: 18px;
+            line-height: 1.5;
+        }
+
+        .info-box {
+            background: rgba(0, 240, 255, 0.03);
+            border: 1px dashed var(--cyan-dim);
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .info-list {
+            list-style: none;
+        }
+
+        .info-list li {
+            position: relative;
+            padding-left: 18px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #d1f7ff;
+        }
+
+        .info-list li::before {
+            content: '■';
+            position: absolute;
+            left: 0;
+            color: var(--cyan-main);
+            font-size: 10px;
+            top: 2px;
+        }
+
+        .highlight {
+            color: var(--yellow-accent);
+            font-weight: bold;
+        }
+
+        .warning-text {
+            color: var(--red-accent);
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        /* Sub-page Grid Layouts */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .cyber-card {
+            background: rgba(5, 26, 36, 0.8);
+            border: 1px solid var(--cyan-dim);
+            padding: 15px;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .cyber-card:hover {
+            border-color: var(--cyan-main);
+            box-shadow: var(--border-glow);
+            transform: translateY(-2px);
+        }
+
+        .cyber-card h3 {
+            color: var(--cyan-main);
+            font-size: 16px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+            padding-bottom: 5px;
+        }
+
+        .cyber-card p {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #b0e8f5;
+        }
+
+        /* --------------------------------------------------
+         * FOOTER / ACTION BAR
+         * -------------------------------------------------- */
+        .net-footer {
+            border-top: 1px solid var(--cyan-dim);
+            background: #000;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .footer-info {
+            font-size: 11px;
+            color: var(--cyan-dim);
+            font-family: 'Orbitron', monospace;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .cyber-btn {
+            background: var(--cyan-main);
+            color: #000;
+            border: none;
+            padding: 8px 16px;
+            font-weight: 900;
+            font-size: 13px;
+            cursor: pointer;
+            clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+            transition: all 0.2s ease;
+        }
+
+        .cyber-btn:hover {
+            background: var(--yellow-accent);
+            box-shadow: 0 0 15px var(--yellow-accent);
+        }
+
+        .cyber-btn.secondary {
+            background: transparent;
+            color: var(--cyan-main);
+            border: 1px solid var(--cyan-main);
+            clip-path: none;
+        }
+
+        .cyber-btn.secondary:hover {
+            background: rgba(0, 240, 255, 0.2);
+            color: #fff;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+            .tab-btn {
+                flex: 1 1 40%;
+            }
+            .net-footer {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- KEYSTONE CYBERPUNK BROWSER CONTAINER -->
+    <div class="browser-frame">
+        
+        <!-- Net Status Header -->
+        <div class="net-top-bar">
+            <div class="net-icon">🌐</div>
+            <span class="net-title">NET ACCESS // SECURED NODE</span>
+        </div>
+
+        <!-- Keystone URL Bar -->
+        <div class="keystone-bar">
+            <div class="keystone-logo">KEYSTONE</div>
+            <div class="url-box">NETDIR://SPACEFED.CORP/VALHALLA_PACKAGE</div>
+            <div class="netwatch-tag">POWERED BY NETWATCH</div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" onclick="openTab('home', this)">메인 홈</button>
+            <button class="tab-btn" onclick="openTab('shuttle', this)">우주 왕복선</button>
+            <button class="tab-btn" onclick="openTab('sight', this)">관광지</button>
+            <button class="tab-btn" onclick="openTab('play', this)">놀이시설</button>
+            <button class="tab-btn" onclick="openTab('souvenir', this)">기념품</button>
+        </nav>
+
+        <!-- Main Content Section -->
+        <main class="content-area">
+
+            <!-- TAB 1: MAIN HOME (푸른 바다와 대륙이 잘 보이는 골디락스 행성) -->
+            <section id="home" class="tab-content active">
+                <!-- Cropped Blue Ocean & Continent Goldilocks Planet Image -->
+                <div class="planet-banner">
+                    <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80" alt="Planet Valhalla - Blue Ocean Goldilocks Planet">
+                    <div class="planet-overlay-text">TARGET: PLANET VALHALLA [SECTOR 04]</div>
+                </div>
+
+                <h1 class="main-title">9-DAY SPACE VALHALLA LUXURY TOUR</h1>
+                <p class="sub-title">"당신의 두 번째 고향, 제2의 지구 <스페이스 발할라>로 오신 것을 환영합니다."</p>
+
+                <p style="font-size: 13px; line-height: 1.6; color: #a5d8e6;">
+                    지구 표면적의 4억 8,000만 ㎢ 대지, 땅 아래 70%를 차지하는 풍부한 수자원, 그리고 인간의 몸으로 직관할 수 있는 생명력이 만개한 행성. 
+                    첫 이륙선 <b style="color:#fff;">아스가르드 4호</b>의 위대한 업적을 기리며 탄생한 스페이스 발할라의 단 하나 뿐인 공식 9일 패키지 상품입니다.
+                </p>
+
+                <div class="info-box">
+                    <ul class="info-list">
+                        <li><b>여정 일정</b>: 총 9일 (왕복 우주 비행 4일 + 행성 기지 체류 5일)</li>
+                        <li><b>모집 정원</b>: 한 패키지당 <span class="highlight">최대 10인 이하</span> 소예 팀 구성</li>
+                        <li><b>참여 방식</b>: 50% 전 세계 대상 행운 추첨 / 50% 우주연합 막대 후원자 전용 승선권</li>
+                        <li><b>안전 및 자유도</b>: 기지 주변 및 정해진 안전 지역 중심 관람 (통제된 고품격 가이드 투어)</li>
+                    </ul>
+                    <div class="warning-text">※ 미개척 구역 무단 이탈 시 우주연합 보안 규정 44조에 의해 즉시 격리 조치됩니다.</div>
+                </div>
+            </section>
+
+            <!-- TAB 2: SHUTTLE -->
+            <section id="shuttle" class="tab-content">
+                <h1 class="main-title">호화 우주왕복선 내부 시설</h1>
+                <p class="sub-title">지상의 고급 호텔을 그대로 옮겨놓은 듯한 완벽하고 익숙한 프라이빗 건축 구조</p>
+
+                <div class="card-grid">
+                    <div class="cyber-card">
+                        <h3>프라이빗 전용 객실</h3>
+                        <p>우주선이라는 한계를 잊게 만드는 쾌적한 구조. 승객 각자에게 독립된 맞춤형 호텔급 객실이 제공됩니다.</p>
+                    </div>
+                    <div class="cyber-card">
+                        <h3>그랜드 라운지 & 파인 다이닝</h3>
+                        <p>넓고 화려한 메인 라운지, 감성적인 바(Bar), 그리고 셰프의 요리를 즐기는 고품격 레스토랑이 마련되어 있습니다.</p>
+                    </div>
+                    <div class="cyber-card">
+                        <h3>문화 & 헬스 케어 구역</h3>
+                        <p>긴 비행 중 지루할 틈이 없도록 최첨단 우주 영상실과 무중력/저중력에 맞춘 전용 운동실을 자유롭게 이용 가능합니다.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: SIGHTSEEING -->
+            <section id="sight" class="tab-content">
+                <h1 class="main-title">스페이스 발할라 늪지대 잠수함 탐사</h1>
+                <p class="sub-title">검은 부생식물 아래 펼쳐지는 영롱한 보석 동굴 같은 신비로운 수중 세계</p>
+
+                <div class="card-grid">
+                    <div class="cyber-card">
+                        <h3>광활하게 펼쳐진 태고의 늪지대</h3>
+                        <p>지평선 끝까지 아득하게 이어진 발할라 특유의 대형 늪지 생태계. 지구에서는 볼 수 없었던 낯선 생명력의 장관입니다.</p>
+                    </div>
+                    <div class="cyber-card">
+                        <h3>전용 잠수함 수중 관람 코스</h3>
+                        <p>최신형 관람 잠수함에 탑승하여 늪지 내부에서 자라난 수십만 가지의 기이하고 생경한 외계 식물들을 가까이서 관람합니다.</p>
+                    </div>
+                    <div class="cyber-card">
+                        <h3>보석으로 장식된 수중 동굴 연출</h3>
+                        <p>수면 위는 검은 부생식물로 덮여 어두운 칠흑 같지만, 수면 아래는 발광 식물들이 화려한 빛을 내뿜어 보석 동굴에 온 듯한 장관을 연출합니다.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: AMENITIES -->
+            <section id="play" class="tab-content">
+                <h1 class="main-title">무중력 유영 공간 & AI 셰프 라이브</h1>
+                <p class="sub-title">"세상의 발전이 참 빠르네..." 감탄을 자아내는 최첨단 편의 서비스</p>
+
+                <div class="card-grid">
+                    <div class="cyber-card">
+                        <h3>일일 1시간 무중력 자유 유영</h3>
+                        <p>하루 1시간 동안 안전하게 무중력 상태로 둥둥 떠다니며 놀 수 있는 전용 무중력 공간을 한시적으로 개방합니다.</p>
+                    </div>
+                    <div class="cyber-card">
+                        <h3>우주식품 연구가의 맞춤 식단</h3>
+                        <p>오랜 경력의 우주식품 연구가가 승객들의 영양 균형과 최상의 맛 상태를 다각도로 고려하여 설계한 고품격 메뉴.</p>
+                    </div>
+                    <div class="cyber-card">
+                        <h3>어시스턴트 로봇 조리 영상</h3>
+                        <p>사이트 내 영상 스트리밍을 통해 정교한 어시스턴트 로봇이 직접 음식을 조리하는 전 과정을 실시간으로 확인할 수 있습니다.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: SOUVENIR -->
+            <section id="souvenir" class="tab-content">
+                <h1 class="main-title">발할라 희귀 수생식물 (애완 우주식물)</h1>
+                <p class="sub-title">유명 연예인들의 애완 식물로 유명해진 오묘한 빛깔의 한정판 소장품</p>
+
+                <div class="card-grid">
+                    <div class="cyber-card">
+                        <h3>셀럽들의 인기 '애완 우주식물'</h3>
+                        <p>지구에는 존재하지 않는 발할라 고유의 수생식물. 소수 셀럽들이 키우는 모습이 방송에 공개되며 세계적인 인기를 얻었습니다.</p>
+                    </div>
+                    <div class="cyber-card">
+                        <h3>반투명 오색 해초 튜브 키트</h3>
+                        <p>소형 보존 튜브에 담겨 제공되며, 반투명한 해초 같은 실루엣이 오묘하고 영롱한 색채를 내뿜습니다.</p>
+                    </div>
+                    <div class="cyber-card">
+                        <h3>원리 미상의 미스터리 발광</h3>
+                        <p>멋대로 색이 변하거나 스스로 빛을 발하지만, 현재 우주 과학 기술로도 그 발광 원리가 밝혀지지 않은 신비로운 식물입니다.</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer Action Bar -->
+        <footer class="net-footer">
+            <div class="footer-info">
+                © SPACE FEDERATION TOURISM CORP. ALL RIGHTS RESERVED.
+            </div>
+            <div class="btn-group">
+                <button class="cyber-btn secondary" onclick="alert('후원자 전용 로그인 창으로 이동합니다.')">후원자 티켓 조회</button>
+                <button class="cyber-btn" onclick="alert('전 세계 추첨 응모가 완료되었습니다! (결과: 매월 1일 발표)')">로또 추첨 응모하기</button>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- TAB SWITCHING SCRIPT -->
+    <script>
+        function openTab(tabId, element) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Remove active class from buttons
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            // Show selected tab & set button active
+            document.getElementById(tabId).classList.add('active');
+            element.classList.add('active');
+        }
+    </script>
+</body>
+</html>
